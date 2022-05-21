@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tic_tac_toe/main.dart';
+
+final ticTacToeProvider = StateProvider<List<FieldState>>((ref) {
+  return List.filled(3 * 3, FieldState.empty);
+});
+
+final playerProvider = StateProvider<bool>((ref) {
+  return false;
+});
 
 enum FieldState {
   empty("Empty"),
@@ -9,47 +19,131 @@ enum FieldState {
   const FieldState(this.name);
 }
 
-class TicTacToe extends StatefulWidget {
+class TicTacToe extends ConsumerWidget {
   const TicTacToe({Key? key}) : super(key: key);
 
   @override
-  State<TicTacToe> createState() => _TicTacToeState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<StateController<List<FieldState>>>(ticTacToeProvider.state,
+        (previous, next) {
+      String winnerName = "";
+      Color color = Theme.of(context).primaryColor;
+      if (hasPlayerWon(FieldState.player1, next.state)) {
+        winnerName = "${FieldState.player1.name} Has Won!";
+        color = Colors.green;
+      } else if (hasPlayerWon(FieldState.player2, next.state)) {
+        winnerName = "${FieldState.player2.name} Has Won!";
+        color = Colors.red;
+      } else if (!next.state.contains(FieldState.empty)) {
+        winnerName = "Draw!";
+      } else {
+        return;
+      }
+      showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) => SimpleDialog(
+          backgroundColor: color,
+          titlePadding: const EdgeInsets.all(10),
+          contentPadding: const EdgeInsets.all(0),
+          title: const Text(
+            'Game Ended',
+            textAlign: TextAlign.center,
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      winnerName,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        ref.refresh(ticTacToeProvider);
+                        Navigator.pop(context, 'Again');
+                      },
+                      child: const Text("Play Again!"),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
 
-class _TicTacToeState extends State<TicTacToe> {
-  var fields = List.filled(9, FieldState.empty);
-  bool player = false;
-  @override
-  Widget build(BuildContext context) {
-    hasPlayerWon(player) {
-      // horizontal
-      if ((fields[0] == player && fields[1] == player && fields[2] == player) ||
-          (fields[3] == player && fields[4] == player && fields[5] == player) ||
-          (fields[6] == player && fields[7] == player && fields[8] == player)) {
-        return true;
-      }
-      // vertical
-      if ((fields[0] == player && fields[3] == player && fields[6] == player) ||
-          (fields[1] == player && fields[4] == player && fields[7] == player) ||
-          (fields[2] == player && fields[5] == player && fields[8] == player)) {
-        return true;
-      }
-      // diagonal
-      if ((fields[0] == player && fields[4] == player && fields[8] == player) ||
-          (fields[6] == player && fields[4] == player && fields[2] == player)) {
-        return true;
-      }
-      return false;
-    }
+    List<Widget> children = generateChildren(ref, context);
 
-    FieldState? winner;
-    winner = hasPlayerWon(FieldState.player1)
-        ? FieldState.player1
-        : hasPlayerWon(FieldState.player2)
-            ? FieldState.player2
-            : null;
+    return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              ref.refresh(ticTacToeProvider);
+            },
+            icon: const Icon(Icons.autorenew),
+          ),
+          IconButton(
+            onPressed: () {
+              ref.read(themeColorProvider.state).state = Colors.red;
+            },
+            icon: Icon(
+              Icons.format_color_fill_outlined,
+              color: Colors.red.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              ref.read(themeColorProvider.state).state = Colors.amber;
+            },
+            icon: Icon(
+              Icons.format_color_fill_outlined,
+              color: Colors.amber.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              ref.read(themeColorProvider.state).state = Colors.green;
+            },
+            icon: Icon(
+              Icons.format_color_fill_outlined,
+              color: Colors.green.shade700,
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Builder(
+            builder: (context) {
+              // if (winner == null) {
+              return GridView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                children: children,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> generateChildren(WidgetRef ref, context) {
+    List<FieldState> fields = ref.watch(ticTacToeProvider.state).state;
+    bool player = ref.watch(playerProvider.state).state;
     List<Widget> children = [];
-    bool hassEmptyField = false;
     for (int i = 0; i < 9; i++) {
       IconData? iconData;
       Color? color = Colors.transparent;
@@ -57,12 +151,12 @@ class _TicTacToeState extends State<TicTacToe> {
       switch (fields[i]) {
         case FieldState.empty:
           iconData = Icons.question_mark;
-          color = Colors.transparent;
+          color = Theme.of(context).primaryColorLight;
           onTab = (int id) {
-            setState(() {
-              player = !player;
-              fields[id] = player ? FieldState.player1 : FieldState.player2;
-            });
+            List<FieldState> state = List.from(fields);
+            state[id] = player ? FieldState.player1 : FieldState.player2;
+            ref.read(ticTacToeProvider.state).state = state;
+            ref.read(playerProvider.state).state = !player;
           };
           break;
         case FieldState.player1:
@@ -83,79 +177,29 @@ class _TicTacToeState extends State<TicTacToe> {
           onTab: onTab,
         ),
       );
-      if (fields[i] == FieldState.empty) hassEmptyField = true;
     }
+    return children;
+  }
 
-    if (!hassEmptyField) winner = FieldState.empty;
-    return Scaffold(
-      backgroundColor: winner == FieldState.player1
-          ? Colors.green.shade300
-          : winner == FieldState.player2
-              ? Colors.red.shade300
-              : Colors.amber.shade300,
-      appBar: AppBar(actions: [
-        IconButton(
-            onPressed: () {
-              setState(() {
-                fields = List.filled(9, FieldState.empty);
-              });
-            },
-            icon: const Icon(Icons.autorenew))
-      ]),
-      body: SafeArea(
-        child: Center(
-          child: Builder(
-            builder: (context) {
-              if (winner == null) {
-                return GridView(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3),
-                  children: children,
-                );
-              } else {
-                String winnerName = winner == FieldState.empty
-                    ? "Draw!"
-                    : "${winner.name} Has Won!";
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 100),
-                        color: winner == FieldState.player1
-                            ? Colors.green
-                            : winner == FieldState.player2
-                                ? Colors.red
-                                : Colors.amber,
-                        child: ListTile(
-                          title: Text(
-                            winnerName,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            fields = List.filled(9, FieldState.empty);
-                          });
-                        },
-                        child: const Text("Play Again!"),
-                      )
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ),
-    );
+  bool hasPlayerWon(FieldState player, List<FieldState> fields) {
+    // horizontal
+    if ((fields[0] == player && fields[1] == player && fields[2] == player) ||
+        (fields[3] == player && fields[4] == player && fields[5] == player) ||
+        (fields[6] == player && fields[7] == player && fields[8] == player)) {
+      return true;
+    }
+    // vertical
+    if ((fields[0] == player && fields[3] == player && fields[6] == player) ||
+        (fields[1] == player && fields[4] == player && fields[7] == player) ||
+        (fields[2] == player && fields[5] == player && fields[8] == player)) {
+      return true;
+    }
+    // diagonal
+    if ((fields[0] == player && fields[4] == player && fields[8] == player) ||
+        (fields[6] == player && fields[4] == player && fields[2] == player)) {
+      return true;
+    }
+    return false;
   }
 }
 
@@ -175,18 +219,17 @@ class Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (onTab != null) onTab!(id);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          border: Border.all(),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () {
+          if (onTab != null) onTab!(id);
+        },
         child: Container(
-          constraints: const BoxConstraints.expand(),
-          color: color,
+          decoration: BoxDecoration(
+              color: color,
+              border: Border.all(color: Colors.black54),
+              borderRadius: BorderRadius.circular(10)),
           child: Icon(icon ?? Icons.question_mark),
         ),
       ),
