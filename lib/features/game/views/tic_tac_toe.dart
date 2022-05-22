@@ -1,22 +1,24 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tic_tac_toe/main.dart';
 
-final ticTacToeProvider = StateProvider<List<FieldState>>((ref) {
-  return List.filled(3 * 3, FieldState.empty);
+final ticTacToeProvider = StateProvider.autoDispose<List<Player>>((ref) {
+  return List.filled(3 * 3, Player.none);
 });
 
-final playerProvider = StateProvider<bool>((ref) {
+final playerProvider = StateProvider.autoDispose<bool>((ref) {
   return false;
 });
 
-enum FieldState {
-  empty("Empty"),
+enum Player {
+  none("NONE"),
   player1("Player 1"),
   player2("Player 2");
 
   final String name;
-  const FieldState(this.name);
+  const Player(this.name);
 }
 
 class TicTacToe extends ConsumerWidget {
@@ -24,18 +26,18 @@ class TicTacToe extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<StateController<List<FieldState>>>(ticTacToeProvider.state,
+    ref.listen<StateController<List<Player>>>(ticTacToeProvider.state,
         (previous, next) {
-      String winnerName = "";
+      Player winner;
       Color color = Theme.of(context).primaryColor;
-      if (hasPlayerWon(FieldState.player1, next.state)) {
-        winnerName = "${FieldState.player1.name} Has Won!";
+      if (hasPlayerWon(Player.player1, next.state)) {
+        winner = Player.player1;
         color = Colors.green;
-      } else if (hasPlayerWon(FieldState.player2, next.state)) {
-        winnerName = "${FieldState.player2.name} Has Won!";
+      } else if (hasPlayerWon(Player.player2, next.state)) {
+        winner = Player.player2;
         color = Colors.red;
-      } else if (!next.state.contains(FieldState.empty)) {
-        winnerName = "Draw!";
+      } else if (!next.state.contains(Player.none)) {
+        winner = Player.none;
       } else {
         return;
       }
@@ -58,7 +60,9 @@ class TicTacToe extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      winnerName,
+                      winner == Player.none
+                          ? "Draw"
+                          : "${winner.name} Has Won!",
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(
@@ -67,6 +71,13 @@ class TicTacToe extends ConsumerWidget {
                     ElevatedButton(
                       onPressed: () {
                         ref.refresh(ticTacToeProvider);
+                        if (winner == null) {
+                          Random rng = Random();
+                          winner =
+                              rng.nextBool() ? Player.player2 : Player.player1;
+                        }
+                        ref.read(playerProvider.state).state =
+                            winner == Player.player1 ? true : false;
                         Navigator.pop(context, 'Again');
                       },
                       child: const Text("Play Again!"),
@@ -85,6 +96,7 @@ class TicTacToe extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
+        title: const Text("Tic Tac Toe"),
         actions: [
           IconButton(
             onPressed: () {
@@ -141,29 +153,29 @@ class TicTacToe extends ConsumerWidget {
   }
 
   List<Widget> generateChildren(WidgetRef ref, context) {
-    List<FieldState> fields = ref.watch(ticTacToeProvider.state).state;
-    bool player = ref.watch(playerProvider.state).state;
+    List<Player> fields = ref.watch(ticTacToeProvider);
+    bool player = ref.watch(playerProvider);
     List<Widget> children = [];
     for (int i = 0; i < 9; i++) {
       IconData? iconData;
       Color? color = Colors.transparent;
       void Function(int)? onTab;
       switch (fields[i]) {
-        case FieldState.empty:
+        case Player.none:
           iconData = Icons.question_mark;
           color = Theme.of(context).primaryColorLight;
           onTab = (int id) {
-            List<FieldState> state = List.from(fields);
-            state[id] = player ? FieldState.player1 : FieldState.player2;
+            List<Player> state = List.from(fields);
+            state[id] = player ? Player.player2 : Player.player1;
             ref.read(ticTacToeProvider.state).state = state;
             ref.read(playerProvider.state).state = !player;
           };
           break;
-        case FieldState.player1:
+        case Player.player1:
           iconData = Icons.circle_outlined;
           color = Colors.green.shade400;
           break;
-        case FieldState.player2:
+        case Player.player2:
           iconData = Icons.clear;
           color = Colors.red.shade400;
           break;
@@ -181,7 +193,7 @@ class TicTacToe extends ConsumerWidget {
     return children;
   }
 
-  bool hasPlayerWon(FieldState player, List<FieldState> fields) {
+  bool hasPlayerWon(Player player, List<Player> fields) {
     // horizontal
     if ((fields[0] == player && fields[1] == player && fields[2] == player) ||
         (fields[3] == player && fields[4] == player && fields[5] == player) ||
@@ -220,7 +232,7 @@ class Field extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(2.0),
       child: GestureDetector(
         onTap: () {
           if (onTab != null) onTab!(id);
