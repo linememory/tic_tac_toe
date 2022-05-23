@@ -71,7 +71,7 @@ class TicTacToe extends ConsumerWidget {
                     ElevatedButton(
                       onPressed: () {
                         ref.refresh(ticTacToeProvider);
-                        if (winner == null) {
+                        if (winner == Player.none) {
                           Random rng = Random();
                           winner =
                               rng.nextBool() ? Player.player2 : Player.player1;
