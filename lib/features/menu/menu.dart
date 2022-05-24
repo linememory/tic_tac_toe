@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tic_tac_toe/features/game/views/tic_tac_toe.dart';
+import 'package:tic_tac_toe/features/menu/credits.dart';
 
 class Menu extends StatelessWidget {
   const Menu({Key? key}) : super(key: key);
@@ -45,7 +46,14 @@ class Menu extends StatelessWidget {
             ),
             ElevatedButton(
               style: buttonStyle,
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const Credits();
+                  },
+                );
+              },
               child: const Text("Credits"),
             ),
             ElevatedButton(
