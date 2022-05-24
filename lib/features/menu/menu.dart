@@ -57,6 +57,19 @@ class Menu extends StatelessWidget {
               style: buttonStyle,
               onPressed: () {
                 showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) {
+                    return const Settings();
+                  },
+                );
+              },
+              child: const Text("Settings"),
+            ),
+            ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
+                showDialog(
                   context: context,
                   builder: (context) {
                     return const Credits();
