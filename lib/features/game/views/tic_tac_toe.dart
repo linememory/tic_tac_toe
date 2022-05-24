@@ -105,40 +105,12 @@ class TicTacToe extends ConsumerWidget {
             },
             icon: const Icon(Icons.autorenew),
           ),
-          IconButton(
-            onPressed: () {
-              ref.read(themeColorProvider.state).state = Colors.red;
-            },
-            icon: Icon(
-              Icons.format_color_fill_outlined,
-              color: Colors.red.shade700,
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              ref.read(themeColorProvider.state).state = Colors.amber;
-            },
-            icon: Icon(
-              Icons.format_color_fill_outlined,
-              color: Colors.amber.shade700,
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              ref.read(themeColorProvider.state).state = Colors.green;
-            },
-            icon: Icon(
-              Icons.format_color_fill_outlined,
-              color: Colors.green.shade700,
-            ),
-          ),
         ],
       ),
       body: SafeArea(
         child: Center(
           child: Builder(
             builder: (context) {
-              // if (winner == null) {
               return GridView(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(20),
