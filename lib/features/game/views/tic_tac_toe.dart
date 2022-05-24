@@ -94,29 +94,45 @@ class TicTacToe extends ConsumerWidget {
 
     List<Widget> children = generateChildren(ref, context);
 
+    AppBar appBar = AppBar(
+      title: const Text("Tic Tac Toe"),
+      actions: [
+        IconButton(
+          onPressed: () {
+            ref.refresh(ticTacToeProvider);
+          },
+          icon: const Icon(Icons.autorenew),
+        ),
+      ],
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      appBar: AppBar(
-        title: const Text("Tic Tac Toe"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.refresh(ticTacToeProvider);
-            },
-            icon: const Icon(Icons.autorenew),
-          ),
-        ],
-      ),
+      appBar: appBar,
       body: SafeArea(
         child: Center(
           child: Builder(
             builder: (context) {
-              return GridView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                children: children,
+              double padding = 20;
+              double width = MediaQuery.of(context).size.width - padding;
+              double height = MediaQuery.of(context).size.height -
+                  padding -
+                  appBar.preferredSize.height;
+              if (height < width) {
+                width = height;
+              } else {
+                height = width;
+              }
+
+              return ConstrainedBox(
+                constraints: BoxConstraints.loose(Size(width, height)),
+                child: GridView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(padding),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3),
+                  children: children,
+                ),
               );
             },
           ),
