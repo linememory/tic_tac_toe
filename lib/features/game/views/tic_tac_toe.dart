@@ -38,6 +38,7 @@ class TicTacToe extends ConsumerWidget {
         color = Colors.red;
       } else if (!next.state.contains(Player.none)) {
         winner = Player.none;
+        color = Colors.yellow;
       } else {
         return;
       }
