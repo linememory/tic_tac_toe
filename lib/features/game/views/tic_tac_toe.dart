@@ -1,8 +1,6 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/main.dart';
 
 final ticTacToeProvider = StateProvider.autoDispose<List<Player>>((ref) {
   return List.filled(3 * 3, Player.none);
@@ -45,49 +43,19 @@ class TicTacToe extends ConsumerWidget {
       showDialog<String>(
         barrierDismissible: false,
         context: context,
-        builder: (BuildContext context) => SimpleDialog(
-          backgroundColor: color,
-          titlePadding: const EdgeInsets.all(10),
-          contentPadding: const EdgeInsets.all(0),
-          title: const Text(
-            'Game Ended',
-            textAlign: TextAlign.center,
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      winner == Player.none
-                          ? "Draw"
-                          : "${winner.name} Has Won!",
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref.refresh(ticTacToeProvider);
-                        if (winner == Player.none) {
-                          Random rng = Random();
-                          winner =
-                              rng.nextBool() ? Player.player2 : Player.player1;
-                        }
-                        ref.read(playerProvider.state).state =
-                            winner == Player.player1 ? true : false;
-                        Navigator.pop(context, 'Again');
-                      },
-                      child: const Text("Play Again!"),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
+        builder: (BuildContext context) => _WinnerDialog(
+          winner: winner,
+          color: color,
+          onAgain: () {
+            ref.refresh(ticTacToeProvider);
+            if (winner == Player.none) {
+              Random rng = Random();
+              winner = rng.nextBool() ? Player.player2 : Player.player1;
+            }
+            ref.read(playerProvider.state).state =
+                winner == Player.player1 ? true : false;
+            Navigator.pop(context, 'Again');
+          },
         ),
       );
     });
@@ -171,7 +139,7 @@ class TicTacToe extends ConsumerWidget {
         default:
       }
       children.add(
-        Field(
+        _Field(
           id: i,
           icon: iconData,
           color: color,
@@ -204,8 +172,8 @@ class TicTacToe extends ConsumerWidget {
   }
 }
 
-class Field extends StatelessWidget {
-  const Field({
+class _Field extends StatelessWidget {
+  const _Field({
     Key? key,
     this.icon,
     this.color,
@@ -234,6 +202,55 @@ class Field extends StatelessWidget {
           child: Icon(icon ?? Icons.question_mark),
         ),
       ),
+    );
+  }
+}
+
+class _WinnerDialog extends StatelessWidget {
+  const _WinnerDialog(
+      {Key? key,
+      required this.winner,
+      required this.onAgain,
+      required this.color})
+      : super(key: key);
+
+  final Player winner;
+  final Color color;
+  final Function() onAgain;
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      backgroundColor: color,
+      titlePadding: const EdgeInsets.all(10),
+      contentPadding: const EdgeInsets.all(0),
+      title: const Text(
+        'Game Ended',
+        textAlign: TextAlign.center,
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  winner == Player.none ? "Draw" : "${winner.name} Has Won!",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                ElevatedButton(
+                  onPressed: onAgain,
+                  child: const Text("Play Again!"),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
