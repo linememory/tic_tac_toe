@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/main.dart';
+import 'package:tic_tac_toe/features/core/settings.dart';
 
-class Settings extends ConsumerWidget {
-  const Settings({Key? key}) : super(key: key);
+class SettingsDialog extends ConsumerWidget {
+  const SettingsDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
-    final themeMode = ref.watch(themeModeProvider);
-    final colorMode = ref.watch(colorModeProvider);
+    final settings = ref.watch(settingsProvider);
+    void changeColor(MaterialColor color) =>
+        ref.read(settingsProvider.state).state =
+            settings.copyWith(customColor: color);
     return SimpleDialog(
       insetPadding: const EdgeInsets.all(30),
       titlePadding: const EdgeInsets.all(10),
@@ -28,7 +30,7 @@ class Settings extends ConsumerWidget {
                 children: [
                   const Text("Theme: "),
                   DropdownButton<ThemeMode>(
-                    value: themeMode,
+                    value: settings.themeMode,
                     items: const [
                       DropdownMenuItem(
                           value: ThemeMode.system, child: Text("System")),
@@ -37,9 +39,10 @@ class Settings extends ConsumerWidget {
                       DropdownMenuItem(
                           value: ThemeMode.dark, child: Text("Dark"))
                     ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref.read(themeModeProvider.state).state = value;
+                    onChanged: (themeMode) {
+                      if (themeMode != null) {
+                        ref.read(settingsProvider.state).state =
+                            settings.copyWith(themeMode: themeMode);
                       }
                     },
                   )
@@ -50,88 +53,80 @@ class Settings extends ConsumerWidget {
                 children: [
                   const Text("ColorMode"),
                   DropdownButton<ColorMode>(
-                    value: colorMode,
+                    value: settings.colorMode,
                     items: const [
                       DropdownMenuItem(
                           value: ColorMode.system, child: Text("System")),
                       DropdownMenuItem(
                           value: ColorMode.custom, child: Text("Custom"))
                     ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref.read(colorModeProvider.state).state = value;
+                    onChanged: (colorMode) {
+                      if (colorMode != null) {
+                        ref.read(settingsProvider.state).state =
+                            settings.copyWith(colorMode: colorMode);
                       }
                     },
                   )
                 ],
               ),
-              if (colorMode == ColorMode.custom)
+              if (settings.colorMode == ColorMode.custom)
                 Wrap(
                   children: [
                     _ColorButton(
                       color: Colors.purple,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.pink,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.red,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.deepOrange,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.amber,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.yellow,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.lime,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.green,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.indigo,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.blue,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.lightBlue,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                     _ColorButton(
                       color: Colors.teal,
-                      onTab: (color) =>
-                          ref.read(themeColorProvider.state).state = color,
+                      onTab: changeColor,
                     ),
                   ],
                 ),
               const Divider(),
-              NameForm(onSubmit: (String player1, String player2) {}),
+              NameForm(onSubmit: (String player1, String player2) {
+                ref.read(settingsProvider.state).state = settings.copyWith(
+                    player1Name: player1, player2Name: player2);
+              }),
             ],
           ),
         ),

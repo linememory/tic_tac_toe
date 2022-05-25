@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tic_tac_toe/features/game/views/tic_tac_toe.dart';
 import 'package:tic_tac_toe/features/menu/credits.dart';
-import 'package:tic_tac_toe/features/menu/settings.dart';
+import 'package:tic_tac_toe/features/menu/settings_dialog.dart';
 import 'package:tic_tac_toe/features/menu/statistics.dart';
 
 class Menu extends StatelessWidget {
@@ -60,7 +60,7 @@ class Menu extends StatelessWidget {
                   barrierDismissible: false,
                   context: context,
                   builder: (context) {
-                    return const Settings();
+                    return const SettingsDialog();
                   },
                 );
               },
