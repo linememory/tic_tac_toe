@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tic_tac_toe/features/core/settings.dart';
 import 'package:tic_tac_toe/features/game/tic_tac_toe_notifier.dart';
 
 final ticTacToeProvider =
-    StateNotifierProvider<TicTacToeNotifier, TicTacToeState>((ref) {
+    StateNotifierProvider.autoDispose<TicTacToeNotifier, TicTacToeState>((ref) {
   return TicTacToeNotifier();
 });
 
@@ -13,6 +14,7 @@ class TicTacToe extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<TicTacToeState>(ticTacToeProvider, (previous, next) {
+      final settings = ref.watch(settingsProvider);
       Color color = Theme.of(context).primaryColor;
       if (next.winner != null) {
         if (next.winner == Player.player1) {
@@ -26,7 +28,11 @@ class TicTacToe extends ConsumerWidget {
           barrierDismissible: false,
           context: context,
           builder: (BuildContext context) => _WinnerDialog(
-            winner: next.winner!,
+            winner: next.winner! == Player.none
+                ? "Draw!"
+                : next.winner! == Player.player1
+                    ? "${settings.player1Name} has won!"
+                    : "${settings.player2Name} has won!",
             color: color,
             onAgain: () {
               ref.read(ticTacToeProvider.notifier).resetGame();
@@ -166,7 +172,7 @@ class _WinnerDialog extends StatelessWidget {
       required this.color})
       : super(key: key);
 
-  final Player winner;
+  final String winner;
   final Color color;
   final Function() onAgain;
 
@@ -188,7 +194,7 @@ class _WinnerDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  winner == Player.none ? "Draw" : "${winner.name} Has Won!",
+                  winner,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
