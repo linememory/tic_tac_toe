@@ -21,7 +21,7 @@ class Menu extends StatelessWidget {
           vertical: VisualDensity.maximumDensity),
     );
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
           child: Center(
               child: Padding(
