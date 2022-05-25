@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tic_tac_toe/features/core/settings.dart';
 import 'package:tic_tac_toe/features/game/tic_tac_toe_notifier.dart';
+import 'package:tic_tac_toe/features/menu/statistics_provider.dart';
 
 final ticTacToeProvider =
     StateNotifierProvider.autoDispose<TicTacToeNotifier, TicTacToeState>((ref) {
@@ -13,16 +14,23 @@ class TicTacToe extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final statistics = ref.watch(statisticsProvider);
     ref.listen<TicTacToeState>(ticTacToeProvider, (previous, next) {
       final settings = ref.watch(settingsProvider);
       Color color = Theme.of(context).primaryColor;
       if (next.winner != null) {
         if (next.winner == Player.player1) {
           color = Colors.green;
+          ref.read(statisticsProvider.state).state =
+              statistics.copyWith(player1: statistics.player1 + 1);
         } else if (next.winner == Player.player2) {
           color = Colors.red;
+          ref.read(statisticsProvider.state).state =
+              statistics.copyWith(player2: statistics.player2 + 1);
         } else {
           color = Colors.yellow;
+          ref.read(statisticsProvider.state).state =
+              statistics.copyWith(draw: statistics.draw + 1);
         }
         showDialog<String>(
           barrierDismissible: false,
