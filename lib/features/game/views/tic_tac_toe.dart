@@ -75,7 +75,7 @@ class TicTacToe extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: appBar,
       body: SafeArea(
         child: Center(
