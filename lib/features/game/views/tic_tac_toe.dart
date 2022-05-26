@@ -21,10 +21,6 @@ class TicTacToe extends ConsumerWidget {
           color = Colors.yellow;
         }
         ref.read(statisticsProvider.notifier).increment(next.winner!);
-        final pref = ref.read(sharedPreferences).maybeWhen(
-              data: (value) => value,
-              orElse: () => null,
-            );
         showDialog<String>(
           barrierDismissible: false,
           context: context,
