@@ -134,7 +134,6 @@ class _NameFormState extends ConsumerState<_NameForm> {
           ),
           TextFormField(
             initialValue: settings.player2Name,
-
             onChanged: (value) {
               player2 = value;
             },

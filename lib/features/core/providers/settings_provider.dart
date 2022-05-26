@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// final settingsProvider = stateNo<Settings>((ref) {
-//   return Settings();
-// });
-
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
   final pref = ref.watch(sharedPreferences).maybeWhen(
@@ -52,10 +48,6 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       state.player2Name
     ];
     pref?.setStringList('settings', settings);
-  }
-
-  void _load() {
-    state = SettingsState.fromStringList(pref?.getStringList('settings'));
   }
 }
 
