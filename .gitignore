@@ -40,6 +40,7 @@ build/
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 
+
 # iOS/XCode related
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
@@ -65,6 +66,9 @@ build/
 **/ios/Flutter/flutter_assets/
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+
+
+**/macos/Flutter/GeneratedPluginRegistrant.swift
 
 
 ### https://raw.github.com/github/gitignore//Android.gitignore
@@ -880,6 +884,8 @@ DerivedData/
 !default.perspectivev3
 
 
+
+
 ### Flutter Generated Exceptions
 
 # Exceptions to above rules.
@@ -888,4 +894,8 @@ DerivedData/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-macos/Flutter/GeneratedPluginRegistrant.swift
+
+
+
+
+
