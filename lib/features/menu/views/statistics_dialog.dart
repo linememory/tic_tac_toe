@@ -42,11 +42,16 @@ class StatisticsDialog extends ConsumerWidget {
             title: Text("${statistics.draw}"),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 80.0),
-          child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Close")),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Close")),
+            ElevatedButton(
+                onPressed: () => ref.read(statisticsProvider.notifier).reset(),
+                child: const Text("Reset")),
+          ],
         )
       ],
     );

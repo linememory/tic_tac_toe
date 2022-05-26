@@ -4,31 +4,27 @@ import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
 import 'package:tic_tac_toe/features/game/providers/tic_tac_toe_provider.dart';
 import 'package:tic_tac_toe/features/menu/providers/statistics_provider.dart';
 
-
-
 class TicTacToe extends ConsumerWidget {
   const TicTacToe({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final statistics = ref.watch(statisticsProvider);
     ref.listen<TicTacToeState>(ticTacToeProvider, (previous, next) {
       final settings = ref.watch(settingsProvider);
       Color color = Theme.of(context).primaryColor;
       if (next.winner != null) {
         if (next.winner == Player.player1) {
           color = Colors.green;
-          ref.read(statisticsProvider.state).state =
-              statistics.copyWith(player1: statistics.player1 + 1);
         } else if (next.winner == Player.player2) {
           color = Colors.red;
-          ref.read(statisticsProvider.state).state =
-              statistics.copyWith(player2: statistics.player2 + 1);
         } else {
           color = Colors.yellow;
-          ref.read(statisticsProvider.state).state =
-              statistics.copyWith(draw: statistics.draw + 1);
         }
+        ref.read(statisticsProvider.notifier).increment(next.winner!);
+        final pref = ref.read(sharedPreferences).maybeWhen(
+              data: (value) => value,
+              orElse: () => null,
+            );
         showDialog<String>(
           barrierDismissible: false,
           context: context,
