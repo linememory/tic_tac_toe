@@ -1,18 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-final settingsProvider = StateProvider<Settings>((ref) {
-  return Settings();
+// final settingsProvider = stateNo<Settings>((ref) {
+//   return Settings();
+// });
+
+final settingsProvider =
+    StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
+  final pref = ref.watch(sharedPreferences).maybeWhen(
+        data: (value) => value,
+        orElse: () => null,
+      );
+  return SettingsNotifier(pref);
 });
 
-class Settings {
+final sharedPreferences = FutureProvider<SharedPreferences>(
+    (_) async => await SharedPreferences.getInstance());
+
+class SettingsNotifier extends StateNotifier<SettingsState> {
+  final SharedPreferences? pref;
+  SettingsNotifier(this.pref)
+      : super(SettingsState.fromStringList(pref?.getStringList("settings")));
+
+  void setColor(MaterialColor color) {
+    state = state.copyWith(customColor: color);
+    _save();
+  }
+
+  void setThemeMode(ThemeMode themeMode) {
+    state = state.copyWith(themeMode: themeMode);
+    _save();
+  }
+
+  void setColorMode(ColorMode colorMode) {
+    state = state.copyWith(colorMode: colorMode);
+    _save();
+  }
+
+  void setPlayerNames(String player1Name, String player2Name) {
+    state = state.copyWith(player1Name: player1Name, player2Name: player2Name);
+    _save();
+  }
+
+  void _save() {
+    final settings = <String>[
+      state.themeMode.index.toString(),
+      state.colorMode.index.toString(),
+      SettingsState.colors.indexOf(state.customColor).toString(),
+      state.player1Name,
+      state.player2Name
+    ];
+    pref?.setStringList('settings', settings);
+  }
+
+  void _load() {
+    state = SettingsState.fromStringList(pref?.getStringList('settings'));
+  }
+}
+
+class SettingsState {
   final ThemeMode themeMode;
   final ColorMode colorMode;
   final MaterialColor customColor;
   final String player1Name;
   final String player2Name;
-  
-  Settings({
+
+  static final List<MaterialColor> colors = [
+    Colors.purple,
+    Colors.pink,
+    Colors.red,
+    Colors.deepOrange,
+    Colors.amber,
+    Colors.yellow,
+    Colors.lime,
+    Colors.green,
+    Colors.indigo,
+    Colors.blue,
+    Colors.lightBlue,
+    Colors.teal,
+  ];
+
+  SettingsState({
     this.themeMode = ThemeMode.system,
     this.colorMode = ColorMode.system,
     this.customColor = Colors.amber,
@@ -20,14 +89,27 @@ class Settings {
     this.player2Name = "Player 2",
   });
 
-  Settings copyWith({
+  static SettingsState fromStringList(
+    List<String>? settings,
+  ) {
+    if (settings == null) return SettingsState();
+    return SettingsState(
+      themeMode: ThemeMode.values[int.tryParse(settings[0]) ?? 0],
+      colorMode: ColorMode.values[int.tryParse(settings[1]) ?? 0],
+      customColor: SettingsState.colors[int.tryParse(settings[2]) ?? 4],
+      player1Name: settings[3],
+      player2Name: settings[4],
+    );
+  }
+
+  SettingsState copyWith({
     ThemeMode? themeMode,
     ColorMode? colorMode,
     MaterialColor? customColor,
     String? player1Name,
     String? player2Name,
   }) {
-    return Settings(
+    return SettingsState(
       themeMode: themeMode ?? this.themeMode,
       colorMode: colorMode ?? this.colorMode,
       customColor: customColor ?? this.customColor,
@@ -45,7 +127,7 @@ class Settings {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Settings &&
+    return other is SettingsState &&
         other.themeMode == themeMode &&
         other.colorMode == colorMode &&
         other.customColor == customColor &&

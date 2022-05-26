@@ -9,8 +9,7 @@ class SettingsDialog extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsProvider);
     void changeColor(MaterialColor color) =>
-        ref.read(settingsProvider.state).state =
-            settings.copyWith(customColor: color);
+        ref.read(settingsProvider.notifier).setColor(color);
     return SimpleDialog(
       insetPadding: const EdgeInsets.all(30),
       titlePadding: const EdgeInsets.all(10),
@@ -41,8 +40,9 @@ class SettingsDialog extends ConsumerWidget {
                     ],
                     onChanged: (themeMode) {
                       if (themeMode != null) {
-                        ref.read(settingsProvider.state).state =
-                            settings.copyWith(themeMode: themeMode);
+                        ref
+                            .read(settingsProvider.notifier)
+                            .setThemeMode(themeMode);
                       }
                     },
                   )
@@ -62,8 +62,9 @@ class SettingsDialog extends ConsumerWidget {
                     ],
                     onChanged: (colorMode) {
                       if (colorMode != null) {
-                        ref.read(settingsProvider.state).state =
-                            settings.copyWith(colorMode: colorMode);
+                        ref
+                            .read(settingsProvider.notifier)
+                            .setColorMode(colorMode);
                       }
                     },
                   )
@@ -71,61 +72,19 @@ class SettingsDialog extends ConsumerWidget {
               ),
               if (settings.colorMode == ColorMode.custom)
                 Wrap(
-                  children: [
-                    _ColorButton(
-                      color: Colors.purple,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.pink,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.red,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.deepOrange,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.amber,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.yellow,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.lime,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.green,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.indigo,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.blue,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.lightBlue,
-                      onTab: changeColor,
-                    ),
-                    _ColorButton(
-                      color: Colors.teal,
-                      onTab: changeColor,
-                    ),
-                  ],
-                ),
+                    children: SettingsState.colors
+                        .map(
+                          (e) => _ColorButton(
+                            color: e,
+                            onTab: changeColor,
+                          ),
+                        )
+                        .toList()),
               const Divider(),
               _NameForm(onSubmit: (String player1, String player2) {
-                ref.read(settingsProvider.state).state = settings.copyWith(
-                    player1Name: player1, player2Name: player2);
+                ref
+                    .read(settingsProvider.notifier)
+                    .setPlayerNames(player1, player2);
               }),
             ],
           ),
@@ -135,7 +94,7 @@ class SettingsDialog extends ConsumerWidget {
   }
 }
 
-class _NameForm extends StatefulWidget {
+class _NameForm extends ConsumerStatefulWidget {
   const _NameForm({
     Key? key,
     required this.onSubmit,
@@ -144,18 +103,22 @@ class _NameForm extends StatefulWidget {
   final void Function(String player1Name, String player2Name) onSubmit;
 
   @override
-  State<_NameForm> createState() => _NameFormState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _NameFormState();
 }
 
-class _NameFormState extends State<_NameForm> {
+class _NameFormState extends ConsumerState<_NameForm> {
   String player1 = "Player 1";
   String player2 = "Player 2";
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsProvider);
+    player1 = settings.player1Name;
+    player2 = settings.player2Name;
     return Form(
       child: Column(
         children: [
           TextFormField(
+            initialValue: settings.player1Name,
             onChanged: (value) {
               player1 = value;
             },
@@ -170,6 +133,8 @@ class _NameFormState extends State<_NameForm> {
             height: 14,
           ),
           TextFormField(
+            initialValue: settings.player2Name,
+
             onChanged: (value) {
               player2 = value;
             },
