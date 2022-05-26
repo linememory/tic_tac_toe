@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/features/core/settings.dart';
-import 'package:tic_tac_toe/features/game/tic_tac_toe_notifier.dart';
-import 'package:tic_tac_toe/features/menu/statistics_provider.dart';
+import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
+import 'package:tic_tac_toe/features/game/providers/tic_tac_toe_provider.dart';
+import 'package:tic_tac_toe/features/menu/providers/statistics_provider.dart';
 
-final ticTacToeProvider =
-    StateNotifierProvider.autoDispose<TicTacToeNotifier, TicTacToeState>((ref) {
-  return TicTacToeNotifier();
-});
+
 
 class TicTacToe extends ConsumerWidget {
   const TicTacToe({Key? key}) : super(key: key);

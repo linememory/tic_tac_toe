@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tic_tac_toe/features/game/views/tic_tac_toe.dart';
-import 'package:tic_tac_toe/features/menu/credits.dart';
-import 'package:tic_tac_toe/features/menu/settings_dialog.dart';
-import 'package:tic_tac_toe/features/menu/statistics.dart';
+import 'package:tic_tac_toe/features/menu/views/credits_dialog.dart';
+import 'package:tic_tac_toe/features/menu/views/settings_dialog.dart';
+import 'package:tic_tac_toe/features/menu/views/statistics_dialog.dart';
 
-class Menu extends StatelessWidget {
-  const Menu({Key? key}) : super(key: key);
+class MenuScreen extends StatelessWidget {
+  const MenuScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class Menu extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return const Statistics();
+                    return const StatisticsDialog();
                   },
                 );
               },
@@ -72,7 +72,7 @@ class Menu extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return const Credits();
+                    return const CreditsDialog();
                   },
                 );
               },

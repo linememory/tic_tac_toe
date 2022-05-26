@@ -11,6 +11,7 @@ class Settings {
   final MaterialColor customColor;
   final String player1Name;
   final String player2Name;
+  
   Settings({
     this.themeMode = ThemeMode.system,
     this.colorMode = ColorMode.system,

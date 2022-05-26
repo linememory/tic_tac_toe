@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/features/core/settings.dart';
+import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
 
 class SettingsDialog extends ConsumerWidget {
   const SettingsDialog({Key? key}) : super(key: key);
@@ -123,7 +123,7 @@ class SettingsDialog extends ConsumerWidget {
                   ],
                 ),
               const Divider(),
-              NameForm(onSubmit: (String player1, String player2) {
+              _NameForm(onSubmit: (String player1, String player2) {
                 ref.read(settingsProvider.state).state = settings.copyWith(
                     player1Name: player1, player2Name: player2);
               }),
@@ -135,8 +135,8 @@ class SettingsDialog extends ConsumerWidget {
   }
 }
 
-class NameForm extends StatefulWidget {
-  const NameForm({
+class _NameForm extends StatefulWidget {
+  const _NameForm({
     Key? key,
     required this.onSubmit,
   }) : super(key: key);
@@ -144,10 +144,10 @@ class NameForm extends StatefulWidget {
   final void Function(String player1Name, String player2Name) onSubmit;
 
   @override
-  State<NameForm> createState() => _NameFormState();
+  State<_NameForm> createState() => _NameFormState();
 }
 
-class _NameFormState extends State<NameForm> {
+class _NameFormState extends State<_NameForm> {
   String player1 = "Player 1";
   String player2 = "Player 2";
   @override

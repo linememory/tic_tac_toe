@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/features/menu/statistics_provider.dart';
+import 'package:tic_tac_toe/features/menu/providers/statistics_provider.dart';
 
-class Statistics extends ConsumerWidget {
-  const Statistics({Key? key}) : super(key: key);
+class StatisticsDialog extends ConsumerWidget {
+  const StatisticsDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {

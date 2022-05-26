@@ -1,8 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tic_tac_toe/features/core/settings.dart';
-import 'features/menu/menu.dart';
+import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
+import 'package:tic_tac_toe/features/menu/views/menu_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -38,7 +38,7 @@ class MyApp extends ConsumerWidget {
           themeMode: settings.themeMode,
           theme: ThemeData(colorScheme: lightColorScheme),
           darkTheme: ThemeData(colorScheme: darkColorScheme),
-          home: const Menu(),
+          home: const MenuScreen(),
         );
       },
     );

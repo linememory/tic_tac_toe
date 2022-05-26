@@ -1,5 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final ticTacToeProvider =
+    StateNotifierProvider.autoDispose<TicTacToeNotifier, TicTacToeState>((ref) {
+  return TicTacToeNotifier();
+});
+
 class TicTacToeNotifier extends StateNotifier<TicTacToeState> {
   TicTacToeNotifier()
       : super(TicTacToeState(
