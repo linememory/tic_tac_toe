@@ -57,6 +57,10 @@ class SettingsState {
   final MaterialColor customColor;
   final String player1Name;
   final String player2Name;
+  final MaterialColor player1Color = Colors.green;
+  final MaterialColor player2Color = Colors.red;
+  final MaterialColor drawColor = Colors.amber;
+  final String appName = "Tic Tac Toe";
 
   static final List<MaterialColor> colors = [
     Colors.purple,

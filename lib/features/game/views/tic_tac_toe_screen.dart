@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
 import 'package:tic_tac_toe/features/game/providers/tic_tac_toe_provider.dart';
-import 'package:tic_tac_toe/features/menu/providers/statistics_provider.dart';
+import 'package:tic_tac_toe/features/core/providers/statistics_provider.dart';
+import 'package:tic_tac_toe/features/game/views/winner_dialog.dart';
 
 class TicTacToe extends ConsumerWidget {
   const TicTacToe({Key? key}) : super(key: key);
@@ -13,23 +14,23 @@ class TicTacToe extends ConsumerWidget {
       final settings = ref.watch(settingsProvider);
       Color color = Theme.of(context).primaryColor;
       if (next.winner != null) {
+        String winnerName;
         if (next.winner == Player.player1) {
-          color = Colors.green;
+          winnerName = "${settings.player1Name} has won!";
+          color = settings.player1Color;
         } else if (next.winner == Player.player2) {
-          color = Colors.red;
+          winnerName = "${settings.player2Name} has won!";
+          color = settings.player2Color;
         } else {
-          color = Colors.yellow;
+          winnerName = "Draw!";
+          color = settings.drawColor;
         }
         ref.read(statisticsProvider.notifier).increment(next.winner!);
         showDialog<String>(
           barrierDismissible: false,
           context: context,
-          builder: (BuildContext context) => _WinnerDialog(
-            winner: next.winner! == Player.none
-                ? "Draw!"
-                : next.winner! == Player.player1
-                    ? "${settings.player1Name} has won!"
-                    : "${settings.player2Name} has won!",
+          builder: (BuildContext context) => WinnerDialog(
+            winner: winnerName,
             color: color,
             onAgain: () {
               ref.read(ticTacToeProvider.notifier).resetGame();
@@ -40,10 +41,14 @@ class TicTacToe extends ConsumerWidget {
       }
     });
 
-    List<Widget> children = generateChildren(ref, context);
+    List<Widget> children = _generateGrid(ref, context);
 
     AppBar appBar = AppBar(
-      title: const Text("Tic Tac Toe"),
+      title: Consumer(
+        builder: (context, ref, child) {
+          return Text(ref.watch(settingsProvider).appName);
+        },
+      ),
       actions: [
         IconButton(
           onPressed: () {
@@ -89,8 +94,9 @@ class TicTacToe extends ConsumerWidget {
     );
   }
 
-  List<Widget> generateChildren(WidgetRef ref, context) {
+  List<Widget> _generateGrid(WidgetRef ref, context) {
     final gameState = ref.watch(ticTacToeProvider);
+    final settings = ref.watch(settingsProvider);
     List<Widget> children = [];
     for (int i = 0; i < 9; i++) {
       IconData? iconData;
@@ -106,11 +112,11 @@ class TicTacToe extends ConsumerWidget {
           break;
         case Player.player1:
           iconData = Icons.circle_outlined;
-          color = Colors.green.shade400;
+          color = settings.player1Color.shade400;
           break;
         case Player.player2:
           iconData = Icons.clear;
-          color = Colors.red.shade400;
+          color = settings.player2Color.shade400;
           break;
         default:
       }
@@ -157,55 +163,6 @@ class _Field extends StatelessWidget {
           child: Icon(icon ?? Icons.question_mark),
         ),
       ),
-    );
-  }
-}
-
-class _WinnerDialog extends StatelessWidget {
-  const _WinnerDialog(
-      {Key? key,
-      required this.winner,
-      required this.onAgain,
-      required this.color})
-      : super(key: key);
-
-  final String winner;
-  final Color color;
-  final Function() onAgain;
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      backgroundColor: color,
-      titlePadding: const EdgeInsets.all(10),
-      contentPadding: const EdgeInsets.all(0),
-      title: const Text(
-        'Game Ended',
-        textAlign: TextAlign.center,
-      ),
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  winner,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                ElevatedButton(
-                  onPressed: onAgain,
-                  child: const Text("Play Again!"),
-                )
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

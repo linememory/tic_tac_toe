@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tic_tac_toe/features/game/views/tic_tac_toe.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
+import 'package:tic_tac_toe/features/game/views/tic_tac_toe_screen.dart';
 import 'package:tic_tac_toe/features/menu/views/credits_dialog.dart';
 import 'package:tic_tac_toe/features/menu/views/settings_dialog.dart';
 import 'package:tic_tac_toe/features/menu/views/statistics_dialog.dart';
@@ -20,8 +22,16 @@ class MenuScreen extends StatelessWidget {
           horizontal: VisualDensity.maximumDensity,
           vertical: VisualDensity.maximumDensity),
     );
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppBar(
+        title: Consumer(
+          builder: (context, ref, child) {
+            return Text(ref.watch(settingsProvider).appName);
+          },
+        ),
+      ),
       body: SafeArea(
           child: Center(
               child: Padding(
