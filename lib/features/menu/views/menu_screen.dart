@@ -37,65 +37,68 @@ class MenuScreen extends StatelessWidget {
               child: Padding(
         padding: EdgeInsets.symmetric(
             horizontal: MediaQuery.of(context).size.width / 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TicTacToe()),
-                );
-              },
-              child: const Text("Play"),
-            ),
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return const StatisticsDialog();
-                  },
-                );
-              },
-              child: const Text("Statistics"),
-            ),
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
-                    return const SettingsDialog();
-                  },
-                );
-              },
-              child: const Text("Settings"),
-            ),
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return const CreditsDialog();
-                  },
-                );
-              },
-              child: const Text("Credits"),
-            ),
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                SystemNavigator.pop();
-              },
-              child: const Text("Quit"),
-            ),
-          ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints.loose(const Size.fromWidth(200)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TicTacToe()),
+                  );
+                },
+                child: const Text("Play"),
+              ),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const StatisticsDialog();
+                    },
+                  );
+                },
+                child: const Text("Statistics"),
+              ),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return const SettingsDialog();
+                    },
+                  );
+                },
+                child: const Text("Settings"),
+              ),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const CreditsDialog();
+                    },
+                  );
+                },
+                child: const Text("Credits"),
+              ),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+                child: const Text("Quit"),
+              ),
+            ],
+          ),
         ),
       ))),
     );

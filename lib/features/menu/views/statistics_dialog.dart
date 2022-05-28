@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tic_tac_toe/features/core/providers/statistics_provider.dart';
+import 'package:tic_tac_toe/features/core/widgets/dialog_title.dart';
 
 class StatisticsDialog extends ConsumerWidget {
   const StatisticsDialog({Key? key}) : super(key: key);
@@ -11,10 +12,7 @@ class StatisticsDialog extends ConsumerWidget {
     return SimpleDialog(
       titlePadding: const EdgeInsets.all(10),
       contentPadding: const EdgeInsets.all(10),
-      title: const Text(
-        'Statistics',
-        textAlign: TextAlign.center,
-      ),
+      title: const DialogTitle(title: "Statistics"),
       children: [
         const Text("Games won:"),
         Divider(
@@ -42,16 +40,16 @@ class StatisticsDialog extends ConsumerWidget {
             title: Text("${statistics.draw}"),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Close")),
-            ElevatedButton(
-                onPressed: () => ref.read(statisticsProvider.notifier).reset(),
-                child: const Text("Reset")),
-          ],
+        const SizedBox(
+          height: 10,
+        ),
+        Container(
+          alignment: Alignment.center,
+          child: ElevatedButton(
+              onPressed: () => ref.read(statisticsProvider.notifier).reset(),
+              child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: const Text("Reset"))),
         )
       ],
     );

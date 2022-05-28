@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tic_tac_toe/features/core/providers/settings_provider.dart';
+import 'package:tic_tac_toe/features/core/widgets/dialog_title.dart';
 
 class SettingsDialog extends ConsumerWidget {
   const SettingsDialog({Key? key}) : super(key: key);
@@ -14,15 +15,11 @@ class SettingsDialog extends ConsumerWidget {
       insetPadding: const EdgeInsets.all(30),
       titlePadding: const EdgeInsets.all(10),
       contentPadding: const EdgeInsets.all(10),
-      title: const Text(
-        'Settings',
-        textAlign: TextAlign.center,
-      ),
+      title: const DialogTitle(title: "Settings"),
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
+        ConstrainedBox(
+          constraints: BoxConstraints.loose(const Size.fromWidth(260)),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,18 +141,21 @@ class _NameFormState extends ConsumerState<_NameForm> {
               contentPadding: EdgeInsets.all(10),
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
           Builder(builder: (context) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 80.0),
-              child: ElevatedButton(
-                  onPressed: () {
-                    if (Form.of(context)?.validate() ?? false) {
-                      widget.onSubmit(player1, player2);
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("Save")),
-            );
+            return ElevatedButton(
+                onPressed: () {
+                  if (Form.of(context)?.validate() ?? false) {
+                    widget.onSubmit(player1, player2);
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: const Text("Save Names"),
+                ));
           }),
         ],
       ),

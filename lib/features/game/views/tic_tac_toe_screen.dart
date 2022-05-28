@@ -41,7 +41,7 @@ class TicTacToe extends ConsumerWidget {
       }
     });
 
-    List<Widget> children = _generateGrid(ref, context);
+    List<Widget> gridFields = _generateGridFields(ref, context);
 
     AppBar appBar = AppBar(
       title: Consumer(
@@ -84,7 +84,7 @@ class TicTacToe extends ConsumerWidget {
                   padding: EdgeInsets.all(padding),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3),
-                  children: children,
+                  children: gridFields,
                 ),
               );
             },
@@ -94,7 +94,7 @@ class TicTacToe extends ConsumerWidget {
     );
   }
 
-  List<Widget> _generateGrid(WidgetRef ref, context) {
+  List<Widget> _generateGridFields(WidgetRef ref, context) {
     final gameState = ref.watch(ticTacToeProvider);
     final settings = ref.watch(settingsProvider);
     List<Widget> children = [];
