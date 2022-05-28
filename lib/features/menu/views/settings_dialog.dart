@@ -18,7 +18,7 @@ class SettingsDialog extends ConsumerWidget {
       title: const DialogTitle(title: "Settings"),
       children: [
         ConstrainedBox(
-          constraints: BoxConstraints.loose(const Size.fromWidth(260)),
+          constraints: BoxConstraints.loose(const Size.fromWidth(265)),
           child: Column(
             children: [
               Row(
